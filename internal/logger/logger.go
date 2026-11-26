@@ -9,26 +9,26 @@ import (
 )
 
 // Logger 全局日志实例
-var Logger *logrus.Logger
+var Logger = logrus.New()
 
 // Init 初始化日志系统
 func Init(cfg *config.Config) error {
-	Logger = logrus.New()
+	l := logrus.New()
 
 	// 设置日志级别
 	level, err := logrus.ParseLevel(cfg.Log.Level)
 	if err != nil {
 		return err
 	}
-	Logger.SetLevel(level)
+	l.SetLevel(level)
 
 	// 设置日志格式
 	if cfg.Log.Format == "json" {
-		Logger.SetFormatter(&logrus.JSONFormatter{
+		l.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: "2006-01-02 15:04:05",
 		})
 	} else {
-		Logger.SetFormatter(&logrus.TextFormatter{
+		l.SetFormatter(&logrus.TextFormatter{
 			FullTimestamp:   true,
 			TimestampFormat: "2006-01-02 15:04:05",
 		})
@@ -40,11 +40,12 @@ func Init(cfg *config.Config) error {
 		if err != nil {
 			return err
 		}
-		Logger.SetOutput(io.MultiWriter(os.Stdout, file))
+		l.SetOutput(io.MultiWriter(os.Stdout, file))
 	} else {
-		Logger.SetOutput(os.Stdout)
+		l.SetOutput(os.Stdout)
 	}
 
+	Logger = l
 	return nil
 }
 

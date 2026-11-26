@@ -75,6 +75,10 @@ func (t *FFmpegTranscoder) TranscodeSegment(ctx context.Context, videoURL string
 
 // TranscodeSegmentWithFormat 转码指定时间段的视频片段并指定格式
 func (t *FFmpegTranscoder) TranscodeSegmentWithFormat(ctx context.Context, videoURL string, startTime, duration int, format string) (io.ReadCloser, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+
 	// 获取任务信号量
 	select {
 	case t.taskSem <- struct{}{}:
