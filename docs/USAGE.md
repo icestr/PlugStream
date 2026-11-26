@@ -51,7 +51,7 @@ make docker-run
 ```yaml
 server:
   host: "0.0.0.0"
-  port: 8080
+  port: 26480
   timeout: 300              # 请求超时时间（秒）
   max_concurrent_tasks: 10  # 最大并发转码任务数
 
@@ -85,7 +85,7 @@ log:
 ### 1. 健康检查
 
 ```bash
-curl http://localhost:8080/api/v1/health
+curl http://localhost:26480/api/v1/health
 ```
 
 ### 2. 使用 HLS 播放（推荐）
@@ -98,7 +98,7 @@ curl http://localhost:8080/api/v1/health
 <script>
   const video = document.getElementById('player');
   const videoUrl = 'https://example.com/video.mp4';
-  const m3u8Url = `http://localhost:8080/api/v1/video/hls/playlist?url=${encodeURIComponent(videoUrl)}`;
+  const m3u8Url = `http://localhost:26480/api/v1/video/hls/playlist?url=${encodeURIComponent(videoUrl)}`;
 
   if (Hls.isSupported()) {
     const hls = new Hls();
@@ -116,10 +116,10 @@ curl http://localhost:8080/api/v1/health
 
 ```bash
 # 获取视频总分片数
-curl "http://localhost:8080/api/v1/video/info?url=https://example.com/video.mp4"
+curl "http://localhost:26480/api/v1/video/info?url=https://example.com/video.mp4"
 
 # 获取第 0 个分片（格式可选 mp4 / ts / hls-fmp4）
-curl "http://localhost:8080/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
+curl "http://localhost:26480/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
 ```
 
 详细参数和错误码说明见 [API 文档](./API.md)。

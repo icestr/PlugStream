@@ -66,4 +66,4 @@ docker-build:
 
 ## docker-run: 运行 Docker 容器
 docker-run:
-	@docker run -p 8080:8080 -v $(PWD)/config.yaml:/app/config.yaml:ro plugstream:latest
+	@docker run -p 26480:26480 -v $(PWD)/config.yaml:/app/config.yaml:ro plugstream:latest

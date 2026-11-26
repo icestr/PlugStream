@@ -51,12 +51,12 @@ make build
 验证服务是否启动成功：
 
 ```bash
-curl http://localhost:8080/api/v1/health
+curl http://localhost:26480/api/v1/health
 ```
 
 ## HTTP 接口一览
 
-基础路径：`http://localhost:8080/api/v1`
+基础路径：`http://localhost:26480/api/v1`
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
@@ -71,10 +71,10 @@ curl http://localhost:8080/api/v1/health
 
 ```bash
 # 获取 HLS 播放列表
-curl "http://localhost:8080/api/v1/video/hls/playlist?url=https://example.com/video.mp4"
+curl "http://localhost:26480/api/v1/video/hls/playlist?url=https://example.com/video.mp4"
 
 # 获取第 0 个 hls-fmp4 分片
-curl "http://localhost:8080/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
+curl "http://localhost:26480/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
 ```
 
 仓库内置了一个可直接使用的网页播放器示例：[`examples/player.html`](examples/player.html)。

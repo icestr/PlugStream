@@ -35,10 +35,10 @@ RUN mkdir -p /app/cache && \
 
 USER plugstream
 
-EXPOSE 8080
+EXPOSE 26480
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/v1/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:26480/api/v1/health || exit 1
 
 ENTRYPOINT ["./plugstream"]
 CMD ["-config", "config.yaml"]

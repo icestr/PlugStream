@@ -51,12 +51,12 @@ make build
 Verify the server is running:
 
 ```bash
-curl http://localhost:8080/api/v1/health
+curl http://localhost:26480/api/v1/health
 ```
 
 ## HTTP API
 
-Base URL: `http://localhost:8080/api/v1`
+Base URL: `http://localhost:26480/api/v1`
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -71,10 +71,10 @@ Example:
 
 ```bash
 # Fetch HLS playlist
-curl "http://localhost:8080/api/v1/video/hls/playlist?url=https://example.com/video.mp4"
+curl "http://localhost:26480/api/v1/video/hls/playlist?url=https://example.com/video.mp4"
 
 # Fetch segment 0 as fMP4
-curl "http://localhost:8080/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
+curl "http://localhost:26480/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
 ```
 
 An interactive browser demo is available in [`examples/player.html`](examples/player.html).

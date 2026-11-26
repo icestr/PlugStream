@@ -2,7 +2,7 @@
 
 ## 基础信息
 
-- **Base URL**: `http://localhost:8080/api/v1`
+- **Base URL**: `http://localhost:26480/api/v1`
 - **CORS**: 已启用（`Access-Control-Allow-Origin: *`）
 - **URL 校验规则**: 所有接收 `url` 参数的接口仅允许 `http` 或 `https` 协议且包含有效主机名的地址；传入 `file://` 等其他协议将返回 `400 Bad Request`。
 
@@ -86,8 +86,8 @@ GET /api/v1/video/stream?url={video_url}
 **示例**
 
 ```bash
-curl "http://localhost:8080/api/v1/video/stream?url=https://example.com/video.mp4" -o stream.mp4
-curl -H "Range: bytes=0-1048575" "http://localhost:8080/api/v1/video/stream?url=https://example.com/video.mp4" -o part.mp4
+curl "http://localhost:26480/api/v1/video/stream?url=https://example.com/video.mp4" -o stream.mp4
+curl -H "Range: bytes=0-1048575" "http://localhost:26480/api/v1/video/stream?url=https://example.com/video.mp4" -o part.mp4
 ```
 
 ---
@@ -117,7 +117,7 @@ GET /api/v1/video/segment?url={video_url}&index={segment_index}&format={format}
 **示例**
 
 ```bash
-curl "http://localhost:8080/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
+curl "http://localhost:26480/api/v1/video/segment?url=https://example.com/video.mp4&index=0&format=hls-fmp4" -o seg0.mp4
 ```
 
 ---
@@ -191,7 +191,7 @@ GET /api/v1/video/hls/segment?url={video_url}&index={segment_index}
 ### JavaScript
 
 ```javascript
-const apiBase = 'http://localhost:8080/api/v1';
+const apiBase = 'http://localhost:26480/api/v1';
 const videoUrl = 'https://example.com/video.mp4';
 
 // 获取视频信息
@@ -208,7 +208,7 @@ const playlistUrl = `${apiBase}/video/hls/playlist?url=${encodeURIComponent(vide
 ```python
 import requests
 
-api_base = "http://localhost:8080/api/v1"
+api_base = "http://localhost:26480/api/v1"
 video_url = "https://example.com/video.mp4"
 
 info = requests.get(f"{api_base}/video/info", params={"url": video_url}, timeout=30).json()

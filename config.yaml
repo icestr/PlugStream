@@ -5,7 +5,7 @@ server:
   # HTTP 服务监听地址
   host: "0.0.0.0"
   # HTTP 服务监听端口
-  port: 8080
+  port: 26480
   # 请求超时时间（秒）
   timeout: 300
   # 最大并发转码任务数

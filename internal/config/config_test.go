@@ -11,7 +11,7 @@ func TestLoadConfig(t *testing.T) {
 	configContent := `
 server:
   host: "0.0.0.0"
-  port: 8080
+  port: 26480
   timeout: 300
   max_concurrent_tasks: 10
 
@@ -58,8 +58,8 @@ log:
 	}
 
 	// 验证配置
-	if cfg.Server.Port != 8080 {
-		t.Errorf("端口配置错误: 期望 8080, 实际 %d", cfg.Server.Port)
+	if cfg.Server.Port != 26480 {
+		t.Errorf("端口配置错误: 期望 26480, 实际 %d", cfg.Server.Port)
 	}
 
 	if cfg.FFmpeg.VideoCodec != "libx264" {
@@ -82,7 +82,7 @@ func TestValidateConfig(t *testing.T) {
 			name: "有效配置",
 			config: Config{
 				Server: ServerConfig{
-					Port:               8080,
+					Port:               26480,
 					Timeout:            300,
 					MaxConcurrentTasks: 10,
 				},
@@ -140,7 +140,7 @@ func TestValidateConfig(t *testing.T) {
 			name: "无效 CRF",
 			config: Config{
 				Server: ServerConfig{
-					Port:               8080,
+					Port:               26480,
 					Timeout:            300,
 					MaxConcurrentTasks: 10,
 				},
@@ -169,7 +169,7 @@ func TestValidateConfig(t *testing.T) {
 			name: "无效分片格式",
 			config: Config{
 				Server: ServerConfig{
-					Port:               8080,
+					Port:               26480,
 					Timeout:            300,
 					MaxConcurrentTasks: 10,
 				},
@@ -211,12 +211,12 @@ func TestGetServerAddress(t *testing.T) {
 	cfg := &Config{
 		Server: ServerConfig{
 			Host: "0.0.0.0",
-			Port: 8080,
+			Port: 26480,
 		},
 	}
 
 	addr := cfg.GetServerAddress()
-	expected := "0.0.0.0:8080"
+	expected := "0.0.0.0:26480"
 
 	if addr != expected {
 		t.Errorf("GetServerAddress() = %s, 期望 %s", addr, expected)
