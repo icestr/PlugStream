@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlugStream 播放器示例</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f5f6f8;
+      color: #1f2328;
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    .header {
+      border-bottom: 1px solid #d0d7de;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #57606a;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #24292f;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #1f2328;
+      background-color: #ffffff;
+    }
+
+    .field input:focus {
+      outline: 2px solid #0969da;
+      outline-offset: -1px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      background-color: #f6f8fa;
+      color: #24292f;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #eaeef2;
+    }
+
+    button.primary {
+      background-color: #0969da;
+      border-color: #0969da;
+      color: #ffffff;
+    }
+
+    button.primary:hover {
+      background-color: #0860ca;
+    }
+
+    button.active {
+      background-color: #1f2328;
+      border-color: #1f2328;
+      color: #ffffff;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding: 12px 16px;
+      background-color: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .status-bar span strong {
+      color: #24292f;
+    }
+
+    .video-box {
+      background-color: #000000;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    video {
+      width: 100%;
+      max-height: 520px;
+      display: block;
+    }
+
+    .segments {
+      border-top: 1px solid #d0d7de;
+      padding-top: 16px;
+      display: none;
+    }
+
+    .segments h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .segment-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .segment-list button {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>PlugStream 播放器示例</h1>
+      <p>支持 HLS (fMP4)、MP4 流式传输与按索引分片播放</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for="videoUrl">视频源 URL（http/https）</label>
+        <input
+          type="text"
+          id="videoUrl"
+          placeholder="https://example.com/video.mp4"
+          value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        >
+      </div>
+      <div class="field">
+        <label for="apiUrl">PlugStream API 地址</label>
+        <input
+          type="text"
+          id="apiUrl"
+          placeholder="http://localhost:8080/api/v1"
+          value="http://localhost:8080/api/v1"
+        >
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="playHLS()">HLS 播放</button>
+      <button onclick="playStream()">MP4 流式播放</button>
+      <button onclick="fetchVideoInfo()">获取视频信息</button>
+    </div>
+
+    <div class="status-bar">
+      <span><strong>状态：</strong><span id="statusText">就绪</span></span>
+      <span><strong>分片数：</strong><span id="segmentCount">-</span></span>
+      <span><strong>分片时长：</strong><span id="segmentDuration">-</span></span>
+      <span><strong>预计总时长：</strong><span id="totalDuration">-</span></span>
+    </div>
+
+    <div class="video-box">
+      <video id="videoPlayer" controls></video>
+    </div>
+
+    <div class="segments" id="segmentsSection">
+      <h2>按分片加载（MP4）</h2>
+      <div class="segment-list" id="segmentButtons"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script>
+    const videoPlayer = document.getElementById('videoPlayer');
+    const statusText = document.getElementById('statusText');
+    const segmentsSection = document.getElementById('segmentsSection');
+    const segmentButtons = document.getElementById('segmentButtons');
+    let hlsInstance = null;
+
+    function setStatus(text) {
+      statusText.textContent = text;
+    }
+
+    function destroyHLS() {
+      if (hlsInstance) {
+        hlsInstance.destroy();
+        hlsInstance = null;
+      }
+    }
+
+    function getInputs() {
+      const videoUrl = document.getElementById('videoUrl').value.trim();
+      const apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/+$/, '');
+      if (!videoUrl) {
+        setStatus('请输入视频源 URL');
+        return null;
+      }
+      return { videoUrl, apiUrl };
+    }
+
+    async function playHLS() {
+      const inputs = getInputs();
+      if (!inputs) return;
+
+      destroyHLS();
+      setStatus('加载 HLS 播放列表...');
+      const playlistUrl = `${inputs.apiUrl}/video/hls/playlist?url=${encodeURIComponent(inputs.videoUrl)}`;
+
+      if (window.Hls && Hls.isSupported()) {
+        hlsInstance = new Hls({ enableWorker: true });
+        hlsInstance.loadSource(playlistUrl);
+        hlsInstance.attachMedia(videoPlayer);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+          setStatus('HLS 就绪');
+          videoPlayer.play().catch(() => {});
+        });
+        hlsInstance.on(Hls.Events.ERROR, (_, data) => {
+          if (data.fatal) {
+            setStatus(`HLS 错误: ${data.details}`);
+          }
+        });
+      } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+        videoPlayer.src = playlistUrl;
+        setStatus('原生 HLS 就绪');
+        videoPlayer.play().catch(() => {});
+      } else {
+        setStatus('当前浏览器不支持 HLS');
+      }
+
+      await fetchVideoInfo();
+    }
+
+    async function playStream() {
+      const inputs = getInputs();
+      if (!inputs) return;
+
+      destroyHLS();
+      setStatus('加载 MP4 视频流...');
+      videoPlayer.src = `${inputs.apiUrl}/video/stream?url=${encodeURIComponent(inputs.videoUrl)}`;
+      videoPlayer.play().catch(() => {});
+      await fetchVideoInfo();
+    }
+
+    async function fetchVideoInfo() {
+      const inputs = getInputs();
+      if (!inputs) return;
+
+      try {
+        const res = await fetch(`${inputs.apiUrl}/video/info?url=${encodeURIComponent(inputs.videoUrl)}`);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const info = await res.json();
+        document.getElementById('segmentCount').textContent = info.segment_count;
+        document.getElementById('segmentDuration').textContent = `${info.segment_duration} 秒`;
+        document.getElementById('totalDuration').textContent = `${info.segment_count * info.segment_duration} 秒`;
+        renderSegmentButtons(info.segment_count);
+        setStatus('信息已更新');
+      } catch (err) {
+        setStatus(`获取信息失败: ${err.message}`);
+      }
+    }
+
+    function renderSegmentButtons(count) {
+      segmentButtons.innerHTML = '';
+      const limit = Math.min(count, 30);
+      for (let i = 0; i < limit; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = `分片 ${i}`;
+        btn.onclick = () => loadSegment(i, btn);
+        segmentButtons.appendChild(btn);
+      }
+      if (count > limit) {
+        const note = document.createElement('button');
+        note.textContent = `共 ${count} 个分片`;
+        note.disabled = true;
+        segmentButtons.appendChild(note);
+      }
+      segmentsSection.style.display = count > 0 ? 'block' : 'none';
+    }
+
+    function loadSegment(index, activeBtn) {
+      const inputs = getInputs();
+      if (!inputs) return;
+
+      destroyHLS();
+      setStatus(`加载分片 ${index}...`);
+      videoPlayer.src = `${inputs.apiUrl}/video/segment?url=${encodeURIComponent(inputs.videoUrl)}&index=${index}&format=mp4`;
+      videoPlayer.play().catch(() => {});
+
+      segmentButtons.querySelectorAll('button').forEach((btn) => btn.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+
+    videoPlayer.addEventListener('canplay', () => setStatus('播放就绪'));
+    videoPlayer.addEventListener('error', () => setStatus('视频加载或播放失败'));
+  </script>
+</body>
+</html>

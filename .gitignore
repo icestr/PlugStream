@@ -1,0 +1,33 @@
+# Binaries for programs and plugins
+/PlugStream
+/plugstream
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Build and runtime directories
+build/
+cache/
+
+# IDE and editor directories
+.idea/
+.vscode/
+
+# Test and coverage files
+*.test
+*.out
+coverage.html
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Environment and log files
+.env
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db

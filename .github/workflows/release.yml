@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build release archives
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          mkdir -p dist
+          targets=(
+            "linux amd64"
+            "linux arm64"
+            "darwin amd64"
+            "darwin arm64"
+            "windows amd64"
+          )
+          for target in "${targets[@]}"; do
+            read -r GOOS GOARCH <<< "$target"
+            pkg_dir="dist/plugstream_${VERSION}_${GOOS}_${GOARCH}"
+            mkdir -p "$pkg_dir"
+            bin_name="plugstream"
+            if [ "$GOOS" = "windows" ]; then
+              bin_name="plugstream.exe"
+            fi
+            CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build \
+              -ldflags "-s -w -X main.version=${VERSION}" \
+              -o "${pkg_dir}/${bin_name}" \
+              ./cmd/server
+            cp config.yaml LICENSE README.md README_ZH.md "$pkg_dir/"
+            if [ "$GOOS" = "windows" ]; then
+              (cd dist && zip -r "plugstream_${VERSION}_${GOOS}_${GOARCH}.zip" "plugstream_${VERSION}_${GOOS}_${GOARCH}")
+            else
+              tar -C dist -czf "dist/plugstream_${VERSION}_${GOOS}_${GOARCH}.tar.gz" "plugstream_${VERSION}_${GOOS}_${GOARCH}"
+            fi
+            rm -rf "$pkg_dir"
+          done
+          (cd dist && sha256sum *.tar.gz *.zip > checksums.txt)
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt

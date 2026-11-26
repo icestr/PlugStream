@@ -1,0 +1,16 @@
+.git
+.github
+.idea
+.vscode
+build
+cache
+docs
+examples
+PlugStream
+plugstream
+*.exe
+*.out
+coverage.html
+*.md
+docker-compose.yml
+Makefile

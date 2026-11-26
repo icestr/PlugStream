@@ -1,0 +1,56 @@
+# PlugStream 配置文件
+
+# 服务器配置
+server:
+  # HTTP 服务监听地址
+  host: "0.0.0.0"
+  # HTTP 服务监听端口
+  port: 8080
+  # 请求超时时间（秒）
+  timeout: 300
+  # 最大并发转码任务数
+  max_concurrent_tasks: 10
+
+# FFmpeg 配置
+ffmpeg:
+  # FFmpeg 可执行文件路径（留空则使用系统 PATH）
+  binary_path: ""
+  # 视频编码器
+  video_codec: "libx264"
+  # 音频编码器
+  audio_codec: "aac"
+  # 视频比特率
+  video_bitrate: "2M"
+  # 音频比特率
+  audio_bitrate: "128k"
+  # 编码预设（ultrafast, superfast, veryfast, faster, fast, medium, slow, slower, veryslow）
+  preset: "veryfast"
+  # CRF 质量参数（0-51，越小质量越好，推荐 18-28）
+  crf: 23
+
+# 分片配置
+segment:
+  # 分片时长（秒）
+  duration: 10
+  # 分片格式（fmp4）
+  format: "fmp4"
+
+# 缓存配置
+cache:
+  # 缓存目录
+  directory: "./cache"
+  # 缓存过期时间（小时）
+  expiration: 24
+  # 最大缓存大小（GB）
+  max_size: 50
+  # 清理间隔（小时）
+  cleanup_interval: 1
+
+# 日志配置
+log:
+  # 日志级别（debug, info, warn, error）
+  level: "info"
+  # 日志格式（json, text）
+  format: "json"
+  # 日志输出路径（留空则输出到标准输出）
+  output: ""
